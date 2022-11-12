@@ -1,7 +1,7 @@
 function createStore(initialState) {
     let currentState = initialState;
 
-    // using set to avoid duplicates
+    // using set to avoid duplicates of listeners
     const listeners = new Set();
 
     return {
@@ -13,8 +13,11 @@ function createStore(initialState) {
             listeners.forEach((listener) => listener(currentState));
         },
         subscibe: (listener) => {
+            // listener is a function
             // listener is basically a callback
             listeners.add(listener);
+
+            // when you subscribe you get another function returned which can be used to unsubscribe
             return () => listeners.delete(listener);
         }
     }
