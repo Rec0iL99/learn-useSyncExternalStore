@@ -13,6 +13,7 @@ const useStore = (selector = (state) => state) => {
   // the prev implementation
   // React.useEffect(() => store.subscibe(setState), []) 
   // here again selector is returning the specific value which is then set to state by setState
+  // where am i getting the state in store.subsribe? we are passing currentState to the listener see store.js setState
   React.useEffect(() => store.subscibe((state) => setState(selector(state))), [])
 
   return state;
