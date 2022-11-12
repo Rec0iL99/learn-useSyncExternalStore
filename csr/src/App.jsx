@@ -1,23 +1,29 @@
 import React from 'react';
+import { useSyncExternalStore } from 'react';
 import store from './store';
 
-const useStore = (selector = (state) => state) => {
-  const [state, setState] = React.useState(selector(store.getState())); // the selector is returning only the selected value and then it gets set as the initialValue for the useState
+// ! implementation using useState and useEffect
+// const useStore = (selector = (state) => state) => {
+//   const [state, setState] = React.useState(selector(store.getState())); // the selector is returning only the selected value and then it gets set as the initialValue for the useState
   
-  // before this state would be the whole object ({value1, value2}) but now it's specific courtesy of selector^^
-  console.log('localState', state)
+//   // before this state would be the whole object ({value1, value2}) but now it's specific courtesy of selector^^
+//   console.log('localState', state)
 
-  // subscribe to store the first time by sending setState as param to store.subscribe
-  // so now the setState of above is put into our listeners set and whenever the store does a setState the setState over here also runs making the local state to be in sync with our global store
-  // why using selector? because before we were getting the whole state back and setting state in setState so if only value1 changed we are also making it look like value2 also changed (old method) so it forced a re render
-  // the prev implementation
-  // React.useEffect(() => store.subscibe(setState), []) 
-  // here again selector is returning the specific value which is then set to state by setState
-  // where am i getting the state in store.subsribe? we are passing currentState to the listener see store.js setState
-  React.useEffect(() => store.subscibe((state) => setState(selector(state))), [])
+//   // subscribe to store the first time by sending setState as param to store.subscribe
+//   // so now the setState of above is put into our listeners set and whenever the store does a setState the setState over here also runs making the local state to be in sync with our global store
+//   // why using selector? because before we were getting the whole state back and setting state in setState so if only value1 changed we are also making it look like value2 also changed (old method) so it forced a re render
+//   // the prev implementation
+//   // React.useEffect(() => store.subscibe(setState), []) 
+//   // here again selector is returning the specific value which is then set to state by setState
+//   // where am i getting the state in store.subsribe? we are passing currentState to the listener see store.js setState
+//   React.useEffect(() => store.subscibe((state) => setState(selector(state))), [])
 
-  return state;
-}
+//   return state;
+// }
+
+// not calling store.subscribe like store.subscribe() because we dont know what to pass to the subscribe the first time so let useSyncExternalStore handle that 
+// 2nd arg is getSnapShot which returns snapshot of the state
+const useStore = (selector = (state) => state) => useSyncExternalStore(store.subscibe, () => selector(store.getState()))
 
 const IncrementValue = ({item}) => {
   return <button onClick={() => {
